@@ -12,20 +12,27 @@ function addDay() {
 }
 
 function removeDay() {
-  numDays--;
+  if(numDays === 1){
+    dayItinerary[1] = dayItinerary[0].clone();
+  } else {
+    numDays--;
+    dayItinerary.splice(currentDay, 1)
+    $('#day-add').prev().remove();
+  }
+  let newDay = Math.min(currentDay, numDays);
+  changeDay.call($('#day-buttons').find('button')[newDay - 1], false)
 }
 
-function changeDay() {
+function changeDay(event) {
   if(this.id === "day-add") return;
-
   // Save the choice dom element in the array (index by current day)
   // Clear all map markers
   // Restore the dom element for the day
   // dayItinerary is 1 based, not zero based, in correspondence with the current day
   $(this).parent().find('.current-day').removeClass('current-day');
   $(this).addClass('current-day');
-
-  dayItinerary[currentDay] = ($('#itinerary').clone())
+  //If changeDay is called from removeDay, do not change the data
+  if (event) dayItinerary[currentDay] = ($('#itinerary').clone())
   currentDay = +$(this).text();
   $('#day-text').text('Day ' + currentDay)
 
