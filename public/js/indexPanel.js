@@ -1,11 +1,14 @@
 var markers = {};
 var numDays;
+var dayItinerary;
+var currentDay;
 
 
 function addDay() {
   numDays++
-  $('<button class="btn btn-circle day-btn">' + numDays 
+  $('<button class="btn btn-circle day-btn">' + numDays
     + '</button>').insertBefore('#day-add');
+  dayItinerary.push(dayItinerary[0].clone())
 }
 
 function removeDay() {
@@ -18,8 +21,23 @@ function changeDay() {
   // Save the choice dom element in the array (index by current day)
   // Clear all map markers
   // Restore the dom element for the day
+  // dayItinerary is 1 based, not zero based, in correspondence with the current day
   $(this).parent().find('.current-day').removeClass('current-day');
   $(this).addClass('current-day');
+
+  dayItinerary[currentDay] = ($('#itinerary').clone())
+  currentDay = +$(this).text();
+  $('#day-text').text('Day ' + currentDay)
+
+  for (let key in markers){
+    removeMapTag(key)
+  }
+  $('#itinerary').replaceWith(dayItinerary[currentDay]);
+  setMarkersFromItinerary();
+}
+
+function setMarkersFromItinerary(){
+  let $locations = $('#itinerary').find()
 }
 
 function addMapTag(thing, locType) {
@@ -28,7 +46,8 @@ function addMapTag(thing, locType) {
 }
 
 function removeMapTag(id, eventType) {
-  markers[eventType + '/' + id].setMap(null);
+  var key = (arguments.length > 1) ? eventType + '/' + id : id
+  markers[key].setMap(null);
 }
 
 function remover () {
