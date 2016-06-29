@@ -1,5 +1,6 @@
-$(function initializeMap (){
+var currentMap;
 
+$(function initializeMap (){
   var fullstackAcademy = new google.maps.LatLng(40.705086, -74.009151);
 
   var styleArr = [{
@@ -33,7 +34,7 @@ $(function initializeMap (){
 
   var mapCanvas = document.getElementById('map-canvas');
 
-  var currentMap = new google.maps.Map(mapCanvas, {
+  currentMap = new google.maps.Map(mapCanvas, {
     center: fullstackAcademy,
     zoom: 13,
     mapTypeId: google.maps.MapTypeId.ROADMAP,

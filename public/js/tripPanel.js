@@ -1,4 +1,5 @@
 function populatePanel(){
+  // If I'm not in the index panel, don't do anything.
   if ($('#control-panel').length){
     let $hotelList = $('#hotel-choices')
     hotels.forEach(function(hotel){
@@ -19,32 +20,35 @@ function onClicks () {
   $('#options-panel').on('click' , "button", adder)
 }
 
+function addMapTag(name, locType) {
+
+}
+
+function addChoice($elem, name, id, objects, type) {
+   $elem.append("<div class='itinerary-item'><span class='title'>" + name + 
+      "</span><button class='btn btn-xs btn-danger remove btn-circle'>x</button></div>");
+  addMapTag(name, type);
+}
+
+
+
 function adder (event) {
   let $sibling = $(this).prev()
-  let $option = $sibling[0].selectedOptions[0]
-  // let id = $sibling[0].selectedOptions[0].data('id');
+  let id = $sibling[0].selectedOptions[0].dataset.id;
   let name = $sibling[0].selectedOptions[0].text;
-  let $list;
   switch ($sibling.data('type')) {
     case 'hotel':
-      console.log('that\'s the hotel', name )
-      $list = $('#my-hotels');
-      $list.empty();
+      $('#my-hotels').empty();
+      addChoice($('#my-hotels'), name, id, hotels, $sibling.data('type'));
       break;
     case 'restaurant':
-      console.log('that\'s the restaurant', name)
-      $list = $('#my-restaurants');
-      break;
+      addChoice($('#my-restaurants'), name, id, restaurants, $sibling.data('type'));
+     break;
     case 'activity':
-      console.log('that\'s the activity', name)
-      $list = $('#my-activities');
+      addChoice($('#my-activities'), name, id, activities, $sibling.data('type'));
      break;
   }
-  $list.append(" \
-      <div class='itinerary-item'>\
-        <span class='title'>" + name + "</span>\
-        <button class='btn btn-xs btn-danger remove btn-circle'>x</button>\
-      </div>")
+ 
 }
 
 
