@@ -37,7 +37,13 @@ function changeDay() {
 }
 
 function setMarkersFromItinerary(){
-  let $locations = $('#itinerary').find()
+  let $locations = $('#itinerary').find('.title')
+  for (let i = 0; i < $locations.length; i++) {
+    let locID = $locations[i].dataset.id;
+    let locType = $locations[i].dataset.type;
+    let thing = stuffSearch(locType, locID);
+    addMapTag(thing, locType)
+  }
 }
 
 function addMapTag(thing, locType) {
@@ -58,10 +64,8 @@ function remover () {
   removeMapTag(id, eventType);
 }
 
-function addChoice($elem, id, objects, type) {
-  let thing = objects.find(function(object) {
-      return object.id === +id;
-  })
+function addChoice($elem, id, type) {
+  let thing = stuffSearch(type, id)
  $elem.append("<div class='itinerary-item'><span class='title' data-id=" + id + " data-type=" + type +">" + thing.name +
       "</span><button class='btn btn-xs btn-danger remove btn-circle'>x</button></div>");
   addMapTag(thing, type);
@@ -75,15 +79,26 @@ function adder (event) {
   let id = $sibling[0].selectedOptions[0].dataset.id;
   switch (eventType) {
     case 'hotel':
-      $('#my-hotels').empty();
-      addChoice($('#my-hotels'), id, hotels, eventType);
+      let toBeDeleted = $('#my-hotels').find('.title').data('id')
+      if(toBeDeleted) {
+        removeMapTag(toBeDeleted, 'hotel')
+        $('#my-hotels').empty();
+      }
+      addChoice($('#my-hotels'), id, eventType);
       break;
     case 'restaurant':
-      addChoice($('#my-restaurants'), id, restaurants, eventType);
+      addChoice($('#my-restaurants'), id, eventType);
      break;
     case 'activity':
-      addChoice($('#my-activities'), id, activities, eventType);
+      addChoice($('#my-activities'), id, eventType);
      break;
   }
 
+}
+
+
+function stuffSearch(type, id){
+  return stuff[type].find(function(object) {
+      return object.id === +id;
+  })
 }
