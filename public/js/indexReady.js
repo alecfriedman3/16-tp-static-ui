@@ -28,8 +28,8 @@ function onClicks () {
 $(document).ready(function (){
   dayItinerary = [];
   currentDay = 1;
-  dayItinerary.push($('#itinerary').clone(), null)
   populatePanel();
   onClicks();
+  dayItinerary.push($('#itinerary').clone(true), null)
   numDays = 1;
 })

@@ -8,12 +8,12 @@ function addDay() {
   numDays++
   $('<button class="btn btn-circle day-btn">' + numDays
     + '</button>').insertBefore('#day-add');
-  dayItinerary.push(dayItinerary[0].clone())
+  dayItinerary.push(dayItinerary[0].clone(true))
 }
 
 function removeDay() {
   if(numDays === 1){
-    dayItinerary[1] = dayItinerary[0].clone();
+    dayItinerary[1] = dayItinerary[0].clone(true);
   } else {
     numDays--;
     dayItinerary.splice(currentDay, 1)
@@ -32,7 +32,7 @@ function changeDay(event) {
   $(this).parent().find('.current-day').removeClass('current-day');
   $(this).addClass('current-day');
   //If changeDay is called from removeDay, do not change the data
-  if (event) dayItinerary[currentDay] = ($('#itinerary').clone())
+  if (event) dayItinerary[currentDay] = ($('#itinerary').clone(true))
   currentDay = +$(this).text();
   $('#day-text').text('Day ' + currentDay)
 
