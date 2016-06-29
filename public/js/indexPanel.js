@@ -2,7 +2,6 @@ var markers = {};
 var numDays;
 
 
-
 function addDay() {
   numDays++
   $('<button class="btn btn-circle day-btn">' + numDays 
@@ -14,10 +13,13 @@ function removeDay() {
 }
 
 function changeDay() {
-  if(this.id !== "day-add") {
-    $(this).parent().find('.current-day').removeClass('current-day');
-    $(this).addClass('current-day');
-  }
+  if(this.id === "day-add") return;
+
+  // Save the choice dom element in the array (index by current day)
+  // Clear all map markers
+  // Restore the dom element for the day
+  $(this).parent().find('.current-day').removeClass('current-day');
+  $(this).addClass('current-day');
 }
 
 function addMapTag(thing, locType) {
