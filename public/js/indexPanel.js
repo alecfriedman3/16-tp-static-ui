@@ -1,26 +1,23 @@
 var markers = {};
+var numDays;
 
-function populatePanel(){
-  // If I'm not in the index panel, don't do anything.
-  if ($('#control-panel').length){
-    let $hotelList = $('#hotel-choices')
-    hotels.forEach(function(hotel){
-      $hotelList.append('<option data-id=' + hotel.id +'>' + hotel.name + '</option>')
-    })
-    let $restaurantList = $('#restaurant-choices')
-    restaurants.forEach(function(restaurant){
-      $restaurantList.append('<option data-id="' + restaurant.id +'">' + restaurant.name + '</option>')
-    })
-    let $activities = $('#activity-choices')
-    activities.forEach(function(activity){
-      $activities.append('<option data-id="' + activity.id +'">' + activity.name + '</option>')
-    })
-  }
+
+
+function addDay() {
+  numDays++
+  $('<button class="btn btn-circle day-btn">' + numDays 
+    + '</button>').insertBefore('#day-add');
 }
 
-function onClicks () {
-  $('#options-panel').on('click' , "button", adder)
-  $('#itinerary').on('click' , "button", remover)
+function removeDay() {
+  numDays--;
+}
+
+function changeDay() {
+  if(this.id !== "day-add") {
+    $(this).parent().find('.current-day').removeClass('current-day');
+    $(this).addClass('current-day');
+  }
 }
 
 function addMapTag(thing, locType) {
@@ -69,9 +66,3 @@ function adder (event) {
   }
 
 }
-
-
-$(document).ready(function (){
-  populatePanel();
-  onClicks();
-})

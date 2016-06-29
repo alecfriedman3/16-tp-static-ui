@@ -7,7 +7,9 @@
     "build-css": "node-sass -w -r assets/stylesheets -o public/stylesheets",
     "start:production": "node app.js",
     "start:dev": "nodemon -e html,css,js app.js",
-    "start": "npm run start:dev"
+    "start": "npm run start:dev",
+    "both": "npm run build-css & nodemon -e html,css,js app.js"
+
   },
   "author": "gabriel@fullstackacademy.com",
   "license": "MIT",
