@@ -1,3 +1,5 @@
+var markers = {};
+
 function populatePanel(){
   // If I'm not in the index panel, don't do anything.
   if ($('#control-panel').length){
@@ -18,41 +20,54 @@ function populatePanel(){
 
 function onClicks () {
   $('#options-panel').on('click' , "button", adder)
+  $('#itinerary').on('click' , "button", remover)
 }
 
-function addMapTag(name, locType) {
+function addMapTag(thing, locType) {
+  var mapMarker = drawMarker(locType, thing.place.location, thing.name);
+  markers[locType + '/'+ thing.id] = mapMarker;
+}
 
+function removeMapTag(id, eventType) {
+  markers[eventType + '/' + id].setMap(null);
+}
+
+function remover () {
+  let $sibling = $(this).prev()
+  let eventType = $sibling.data('type')
+  let id = $sibling.data('id');
+  $(this).parent().remove()
+  removeMapTag(id, eventType);
 }
 
 function addChoice($elem, id, objects, type) {
- 
   let thing = objects.find(function(object) {
       return object.id === +id;
   })
- $elem.append("<div class='itinerary-item'><span class='title' data-id=" + id + ">" + thing.name + 
+ $elem.append("<div class='itinerary-item'><span class='title' data-id=" + id + " data-type=" + type +">" + thing.name +
       "</span><button class='btn btn-xs btn-danger remove btn-circle'>x</button></div>");
-  addMapTag(name, type);
+  addMapTag(thing, type);
 }
 
 
 
 function adder (event) {
   let $sibling = $(this).prev()
+  let eventType = $sibling.data('type')
   let id = $sibling[0].selectedOptions[0].dataset.id;
-  let name = $sibling[0].selectedOptions[0].text;
-  switch ($sibling.data('type')) {
+  switch (eventType) {
     case 'hotel':
       $('#my-hotels').empty();
-      addChoice($('#my-hotels'), id, hotels, $sibling.data('type'));
+      addChoice($('#my-hotels'), id, hotels, eventType);
       break;
     case 'restaurant':
-      addChoice($('#my-restaurants'), id, restaurants, $sibling.data('type'));
+      addChoice($('#my-restaurants'), id, restaurants, eventType);
      break;
     case 'activity':
-      addChoice($('#my-activities'), id, activities, $sibling.data('type'));
+      addChoice($('#my-activities'), id, activities, eventType);
      break;
   }
- 
+
 }
 
 
