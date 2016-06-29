@@ -24,8 +24,12 @@ function addMapTag(name, locType) {
 
 }
 
-function addChoice($elem, name, id, objects, type) {
-   $elem.append("<div class='itinerary-item'><span class='title'>" + name + 
+function addChoice($elem, id, objects, type) {
+ 
+  let thing = objects.find(function(object) {
+      return object.id === +id;
+  })
+ $elem.append("<div class='itinerary-item'><span class='title' data-id=" + id + ">" + thing.name + 
       "</span><button class='btn btn-xs btn-danger remove btn-circle'>x</button></div>");
   addMapTag(name, type);
 }
@@ -39,13 +43,13 @@ function adder (event) {
   switch ($sibling.data('type')) {
     case 'hotel':
       $('#my-hotels').empty();
-      addChoice($('#my-hotels'), name, id, hotels, $sibling.data('type'));
+      addChoice($('#my-hotels'), id, hotels, $sibling.data('type'));
       break;
     case 'restaurant':
-      addChoice($('#my-restaurants'), name, id, restaurants, $sibling.data('type'));
+      addChoice($('#my-restaurants'), id, restaurants, $sibling.data('type'));
      break;
     case 'activity':
-      addChoice($('#my-activities'), name, id, activities, $sibling.data('type'));
+      addChoice($('#my-activities'), id, activities, $sibling.data('type'));
      break;
   }
  

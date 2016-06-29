@@ -41,6 +41,12 @@ $(function initializeMap (){
     styles: styleArr
   });
 
+  drawMarker('hotel', [40.705137, -74.007624]);
+  drawMarker('restaurant', [40.705137, -74.013940]);
+  drawMarker('activity', [40.716291, -73.995315]);
+
+});
+
   var iconURLs = {
     hotel: '/images/lodging_0star.png',
     restaurant: '/images/restaurant.png',
@@ -57,8 +63,3 @@ $(function initializeMap (){
     marker.setMap(currentMap);
   }
 
-  drawMarker('hotel', [40.705137, -74.007624]);
-  drawMarker('restaurant', [40.705137, -74.013940]);
-  drawMarker('activity', [40.716291, -73.995315]);
-
-});
