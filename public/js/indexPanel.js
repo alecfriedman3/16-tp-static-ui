@@ -5,23 +5,34 @@ var currentDay;
 var boundary;
 
 
-function addDay() {
+function addDay(event) {
   numDays++
-  $('<button class="btn btn-circle day-btn">' + numDays
-    + '</button>').insertBefore('#day-add');
-  dayItinerary.push(dayItinerary[0].clone(true))
+  addDayButton(numDays)
+  $.ajax({
+    method: 'POST',
+    url: '/api/days/count',
+    data: {day: numDays}
+  })
 }
 
-function removeDay() {
-  if(numDays === 1){
-    dayItinerary[1] = dayItinerary[0].clone(true);
-  } else {
+function addDayButton (num){
+  $('<button class="btn btn-circle day-btn">' + num
+    + '</button>').insertBefore('#day-add');
+}
+
+
+function removeDay(event) {
+  if(numDays !== 1){
     numDays--;
-    dayItinerary.splice(currentDay, 1)
     $('#day-add').prev().remove();
+    $.ajax({
+      method:"DELETE",
+      url: 'api/days/count',
+      data: {day: currentDay}
+    })
   }
   let newDay = Math.min(currentDay, numDays);
-  changeDay.call($('#day-buttons').find('button')[newDay - 1], false)
+  // changeDay.call($('#day-buttons').find('button')[newDay - 1], false)
 }
 
 
@@ -35,6 +46,9 @@ function removeDay() {
 
 
 function setDay(day) {
+  // currentMap.fitBounds([40.705086, -74.009151])
+  // currentMap.setZoom(13)
+  currentDay = day;
   $.ajax({
     method: 'GET',
     url: '/api/days/' + day
@@ -42,12 +56,11 @@ function setDay(day) {
     .then(function(retVal) {
       displayDay(retVal);
       // menu panes
-
     })
 }
 
 function displayDay(blob) {
-  addChoice($('#my-hotels'), blob.hotel.id, 'hotel', blob.hotel.name);
+  if(blob.hotel) addChoice($('#my-hotels'), blob.hotel.id, 'hotel', blob.hotel.name);
   //function addChoice($('#my-hotels'), id, type, name)
   blob.restaurants.forEach (function(restaurant) {
     addChoice($('#my-restaurants'), restaurant.id, 'restaurant', restaurant.name);
@@ -58,12 +71,17 @@ function displayDay(blob) {
 }
 
 function addChoice($elem, id, type, name) {
- $elem.append("<div class='itinerary-item'><span class='title' data-id=" + 
+  $elem.append("<div class='itinerary-item'><span class='title' data-id=" +
       id + " data-type=" + type +">" + name +
       "</span><button class='btn btn-xs btn-danger remove btn-circle'>x</button></div>");
- let thing = stuffSearch(type, id);
+  let thing = stuffSearch(type, id);
   addMapTag(thing, type);
   currentMap.fitBounds(boundary);
+  $.ajax({
+    method: 'POST',
+    url: '/api/days/' + currentDay + '/' + type,
+    data: {day: currentDay, id: id}
+  })
 }
 
 function addMapTag(thing, locType) {
@@ -73,68 +91,20 @@ function addMapTag(thing, locType) {
 }
 
 
-
-
-
-
-
-function changeDay(event) {
-  if(this.id === "day-add") return;
-  // Save the choice dom element in the array (index by current day)
-  // Clear all map markers
-  // Restore the dom element for the day
-  // dayItinerary is 1 based, not zero based, in correspondence with the current day
-  $(this).parent().find('.current-day').removeClass('current-day');
-  $(this).addClass('current-day');
-  //If changeDay is called from removeDay, do not change the data
-  if (event) dayItinerary[currentDay] = ($('#itinerary').clone(true))
-  currentDay = +$(this).text();
-  $('#day-text').text('Day ' + currentDay)
-
-  // Hardcoded map clearing
-  for (let key in markers){
-    removeMapTag(key)
-  }
-  markers = {};
-  boundary = new google.maps.LatLngBounds();
-
-  $('#itinerary').replaceWith(dayItinerary[currentDay]);
-  setMarkersFromItinerary();
-}
-
-function setMarkersFromItinerary(){
-  let $locations = $('#itinerary').find('.title')
-  for (let i = 0; i < $locations.length; i++) {
-    let locID = $locations[i].dataset.id;
-    let locType = $locations[i].dataset.type;
-    let thing = stuffSearch(locType, locID);
-    addMapTag(thing, locType)
-  }
-  currentMap.fitBounds(boundary);
-}
-
-function addMapTag(thing, locType) {
-  var mapMarker = drawMarker(locType, thing.place.location, thing.name);
-  markers[locType + '/'+ thing.id] = mapMarker;
-  boundary.extend(mapMarker.position);
-}
-
-function removeMapTag(id, eventType) {
-  var key = (arguments.length > 1) ? eventType + '/' + id : id
-  markers[key].setMap(null);
-}
-
-function remover () {
+function remover (event) {//event handler from dom button
   let $sibling = $(this).prev()
   let eventType = $sibling.data('type')
   let id = $sibling.data('id');
   $(this).parent().remove()
   removeMapTag(id, eventType);
+  $.ajax({
+    method: 'DELETE',
+    url: '/api/days/' + currentDay + '/' + eventType,
+    data: {day: currentDay, id: id}
+  })
 }
 
-
-
-function adder (event) {
+function adder (event) {//event handler from dom boutton
   let $sibling = $(this).prev()
   let eventType = $sibling.data('type')
   let name = $sibling[0].selectedOptions[0].text;
@@ -158,6 +128,70 @@ function adder (event) {
   }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+function changeDay(event) {
+  if(this.id === "day-add") return;
+  // Save the choice dom element in the array (index by current day)
+  // Clear all map markers
+  // Restore the dom element for the day
+  // dayItinerary is 1 based, not zero based, in correspondence with the current day
+  $(this).parent().find('.current-day').removeClass('current-day');
+  $(this).addClass('current-day');
+
+  $('#my-hotels').empty();
+  $('#my-restaurants').empty();
+  $('#my-activities').empty();
+
+  currentDay = +$(this).text();
+  setDay(currentDay);
+
+  $('#day-text').text('Day ' + currentDay)
+
+  for (let key in markers){
+    removeMapTag(key)
+  }
+  markers = {};
+
+  setMarkersFromItinerary();
+}
+
+function setMarkersFromItinerary(){
+  let $locations = $('#itinerary').find('.title')
+  if($locations.length) boundary = new google.maps.LatLngBounds();
+  for (let i = 0; i < $locations.length; i++) {
+    let locID = $locations[i].dataset.id;
+    let locType = $locations[i].dataset.type;
+    let thing = stuffSearch(locType, locID);
+    addMapTag(thing, locType)
+  }
+  currentMap.fitBounds(boundary);
+}
+
+function addMapTag(thing, locType) {
+  var mapMarker = drawMarker(locType, thing.place.location, thing.name);
+  markers[locType + '/'+ thing.id] = mapMarker;
+  boundary.extend(mapMarker.position);
+}
+
+function removeMapTag(id, eventType) {
+  var key = (arguments.length > 1) ? eventType + '/' + id : id
+  markers[key].setMap(null);
+}
+
+
+
+
+
 
 
 function stuffSearch(type, id){

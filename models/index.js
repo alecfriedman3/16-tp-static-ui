@@ -13,7 +13,5 @@ Day.belongsTo(Hotel);
 Day.belongsToMany(Restaurant, {through: 'DayRestaurant'});
 Day.belongsToMany(Activity, {through: 'DayActivity'});
 
-console.dir(Day);
-
 
 module.exports = db;

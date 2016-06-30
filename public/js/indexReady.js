@@ -30,6 +30,22 @@ function populatePanel(){
   }
 }
 
+function populateDayButtons(){
+  $.ajax({
+    method: 'GET',
+    url: '/api/days/count'
+  })
+  .then(function (dayCount){
+    numDays = dayCount;
+    for (let i = 2; i <= dayCount; i++){
+      addDayButton(i)
+    }
+  })
+  .then(null, function(error){
+    alert(error)
+  })
+}
+
 function onClicks () {
   $('#options-panel').on('click' , "button", adder)
   $('#itinerary').on('click' , "button", remover)
@@ -43,9 +59,9 @@ $(document).ready(function (){
   dayItinerary = [];
   currentDay = 1;
   populatePanel();
+  populateDayButtons();
   onClicks();
   dayItinerary.push($('#itinerary').clone(true), null)
-  numDays = 1;
   boundary = new google.maps.LatLngBounds();
   setDay(1);
 })
