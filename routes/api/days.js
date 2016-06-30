@@ -5,6 +5,7 @@ var Day = require('../../models/day');
 var Activity = require('../../models/activity');
 var Restaurant = require('../../models/restaurant');
 var Hotel = require('../../models/hotel');
+var Place = require('../../models/Place');
 var Promise = require('bluebird');
 
 router.get('/:dayNum', function(req, res, next) {
@@ -13,15 +14,24 @@ router.get('/:dayNum', function(req, res, next) {
       whichDay: req.params.dayNum
     },
     include: [
-    {
-      model: Activity,
-        // through: {
-        //   // attributes: ['name', 'age_range']
-        // }
-     },
-     { model: Restaurant},
-     { model: Hotel}
-   ]
+      {
+        model: Activity,
+
+             include: [
+          { model: Place}
+        ]},
+          // through: {
+          //   // attributes: ['name', 'age_range']
+          // }
+      { model: Restaurant,
+        include: [
+          { model: Place}
+        ]},
+       { model: Hotel,
+             include: [
+          { model: Place}
+        ]},
+    ]
   })
   .then(function(result) {
     res.json(result);

@@ -24,60 +24,6 @@ function removeDay() {
   changeDay.call($('#day-buttons').find('button')[newDay - 1], false)
 }
 
-
-
-
-
-
-
-
-
-
-
-function setDay(day) {
-  $.ajax({
-    method: 'GET',
-    url: '/api/days/' + day
-    })
-    .then(function(retVal) {
-      displayDay(retVal);
-      // menu panes
-
-    })
-}
-
-function displayDay(blob) {
-  addChoice($('#my-hotels'), blob.hotel.id, 'hotel', blob.hotel.name);
-  //function addChoice($('#my-hotels'), id, type, name)
-  blob.restaurants.forEach (function(restaurant) {
-    addChoice($('#my-restaurants'), restaurant.id, 'restaurant', restaurant.name);
-  })
-    blob.activities.forEach (function(activity) {
-    addChoice($('#my-activities'), activity.id, 'activity', activity.name);
-  })
-}
-
-function addChoice($elem, id, type, name) {
- $elem.append("<div class='itinerary-item'><span class='title' data-id=" + 
-      id + " data-type=" + type +">" + name +
-      "</span><button class='btn btn-xs btn-danger remove btn-circle'>x</button></div>");
- let thing = stuffSearch(type, id);
-  addMapTag(thing, type);
-  currentMap.fitBounds(boundary);
-}
-
-function addMapTag(thing, locType) {
-  var mapMarker = drawMarker(locType, thing.place.location, thing.name);
-  markers[locType + '/'+ thing.id] = mapMarker;
-  boundary.extend(mapMarker.position);
-}
-
-
-
-
-
-
-
 function changeDay(event) {
   if(this.id === "day-add") return;
   // Save the choice dom element in the array (index by current day)
@@ -132,15 +78,20 @@ function remover () {
   removeMapTag(id, eventType);
 }
 
+function addChoice($elem, id, type) {
+  let thing = stuffSearch(type, id)
+ $elem.append("<div class='itinerary-item'><span class='title' data-id=" + id + " data-type=" + type +">" + thing.name +
+      "</span><button class='btn btn-xs btn-danger remove btn-circle'>x</button></div>");
+  addMapTag(thing, type);
+  currentMap.fitBounds(boundary);
+}
+
 
 
 function adder (event) {
-debugger;
   let $sibling = $(this).prev()
   let eventType = $sibling.data('type')
-  let name = $sibling[0].selectedOptions[0].text;
   let id = $sibling[0].selectedOptions[0].dataset.id;
-
   switch (eventType) {
     case 'hotel':
       let toBeDeleted = $('#my-hotels').find('.title').data('id')
@@ -148,13 +99,13 @@ debugger;
         removeMapTag(toBeDeleted, 'hotel')
         $('#my-hotels').empty();
       }
-      addChoice($('#my-hotels'), id, eventType, name);
+      addChoice($('#my-hotels'), id, eventType);
       break;
     case 'restaurant':
-      addChoice($('#my-restaurants'), id, eventType, name);
+      addChoice($('#my-restaurants'), id, eventType);
      break;
     case 'activity':
-      addChoice($('#my-activities'), id, eventType, name);
+      addChoice($('#my-activities'), id, eventType);
      break;
   }
 
