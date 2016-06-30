@@ -2,6 +2,7 @@ var markers = {};
 var numDays;
 var dayItinerary;
 var currentDay;
+var boundary;
 
 
 function addDay() {
@@ -36,9 +37,13 @@ function changeDay(event) {
   currentDay = +$(this).text();
   $('#day-text').text('Day ' + currentDay)
 
+  // Hardcoded map clearing
   for (let key in markers){
     removeMapTag(key)
   }
+  markers = {};
+  boundary = new google.maps.LatLngBounds();
+
   $('#itinerary').replaceWith(dayItinerary[currentDay]);
   setMarkersFromItinerary();
 }
@@ -51,11 +56,13 @@ function setMarkersFromItinerary(){
     let thing = stuffSearch(locType, locID);
     addMapTag(thing, locType)
   }
+  currentMap.fitBounds(boundary);
 }
 
 function addMapTag(thing, locType) {
   var mapMarker = drawMarker(locType, thing.place.location, thing.name);
   markers[locType + '/'+ thing.id] = mapMarker;
+  boundary.extend(mapMarker.position);
 }
 
 function removeMapTag(id, eventType) {
@@ -76,6 +83,7 @@ function addChoice($elem, id, type) {
  $elem.append("<div class='itinerary-item'><span class='title' data-id=" + id + " data-type=" + type +">" + thing.name +
       "</span><button class='btn btn-xs btn-danger remove btn-circle'>x</button></div>");
   addMapTag(thing, type);
+  currentMap.fitBounds(boundary);
 }
 
 

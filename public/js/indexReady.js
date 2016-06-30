@@ -32,4 +32,5 @@ $(document).ready(function (){
   onClicks();
   dayItinerary.push($('#itinerary').clone(true), null)
   numDays = 1;
+  boundary = new google.maps.LatLngBounds();
 })
