@@ -135,7 +135,6 @@ function remover () {
 
 
 function adder (event) {
-debugger;
   let $sibling = $(this).prev()
   let eventType = $sibling.data('type')
   let name = $sibling[0].selectedOptions[0].text;
