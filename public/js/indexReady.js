@@ -1,18 +1,32 @@
+var stuff;
+
 function populatePanel(){
   // If I'm not in the index panel, don't do anything.
   if ($('#control-panel').length){
-    let $hotelList = $('#hotel-choices')
-    hotels.forEach(function(hotel){
-      $hotelList.append('<option data-id=' + hotel.id +'>' + hotel.name + '</option>')
+
+  $.ajax({
+    method: 'GET',
+    url: '/api/attractions'
     })
-    let $restaurantList = $('#restaurant-choices')
-    restaurants.forEach(function(restaurant){
-      $restaurantList.append('<option data-id="' + restaurant.id +'">' + restaurant.name + '</option>')
+    .then(function(retVal) {
+      stuff = retVal;
+
+      let $hotelList = $('#hotel-choices')
+      retVal.hotel.forEach(function(hotel){
+        $hotelList.append('<option data-id=' + hotel.id +'>' + hotel.name + '</option>')
+      })
+      let $restaurantList = $('#restaurant-choices')
+      retVal.restaurant.forEach(function(restaurant){
+        $restaurantList.append('<option data-id="' + restaurant.id +'">' + restaurant.name + '</option>')
+      })
+      let $activities = $('#activity-choices')
+      retVal.activity.forEach(function(activity){
+        $activities.append('<option data-id="' + activity.id +'">' + activity.name + '</option>')
+      })
     })
-    let $activities = $('#activity-choices')
-    activities.forEach(function(activity){
-      $activities.append('<option data-id="' + activity.id +'">' + activity.name + '</option>')
-    })
+    .then(null, function(error) {
+      console.log('Error reading attraction data', error);
+    });
   }
 }
 

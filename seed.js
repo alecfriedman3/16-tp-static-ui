@@ -62,6 +62,12 @@ var data = {
   ]
 };
 
+var data2 = {
+  day: [
+    {whichDay: 1}
+  ]
+};
+
 db.sync({force: true})
 .then(function () {
   console.log("Dropped old data, now inserting data");
@@ -71,6 +77,15 @@ db.sync({force: true})
       .create(item, {
         include: [Place]
       });
+    });
+  });
+})
+.then(function () {
+  console.log("inserting placeless data");
+  return Promise.map(Object.keys(data2), function (name) {
+    return Promise.map(data2[name], function (item) {
+      return db.model(name)
+      .create(item, {});
     });
   });
 })
