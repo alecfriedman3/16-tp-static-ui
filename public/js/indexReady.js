@@ -56,12 +56,10 @@ function onClicks () {
 
 
 $(document).ready(function (){
-  dayItinerary = [];
   currentDay = 1;
   populatePanel();
   populateDayButtons();
   onClicks();
-  dayItinerary.push($('#itinerary').clone(true), null)
   boundary = new google.maps.LatLngBounds();
   setDay(1);
 })

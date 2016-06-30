@@ -29,11 +29,36 @@ router.post('/count', function (req, res, next ){
 router.delete('/count', function (req, res, next ){
   console.log('this is the route we want', req.body)
   Day.destroy({
-    whichDay: req.body.day
+    where:{
+      whichDay: req.body.day
+    }
   })
   .then (function (day){
+    return Day.findAll({
+      where:{
+        whichDay: {$gt: req.body.day}
+      }
+    })
+  })
+  .then (function (days){
+    console.log(req.body)
+    promises = [];
+    for(var i = +req.body.day + 1; i <= days.length + +req.body.day; i++){
+      console.log('changing day i', i, 'to', i-1)
+      promises.push(Day.update({
+        whichDay: i - 1
+      },
+      {where:{
+        whichDay: i
+      }}))
+    }
+    return Promise.all(promises)
+  })
+  .then(function(param){
+    console.log(param, 'we have arrived')
     res.end()
-  }).catch(next)
+  })
+  .catch(next)
 })
 
 

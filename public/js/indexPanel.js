@@ -1,6 +1,5 @@
 var markers = {};
 var numDays;
-var dayItinerary;
 var currentDay;
 var boundary;
 
@@ -30,17 +29,13 @@ function removeDay(event) {
       url: 'api/days/count',
       data: {day: currentDay}
     })
+    .then (function (){
+      let newDay = Math.min(currentDay, numDays);
+      changeDay.call($('#day-buttons').find('button')[newDay - 1])
+    })
   }
-  let newDay = Math.min(currentDay, numDays);
-  // changeDay.call($('#day-buttons').find('button')[newDay - 1], false)
+
 }
-
-
-
-
-
-
-
 
 
 
@@ -130,15 +125,6 @@ function adder (event) {//event handler from dom boutton
 }
 
 
-
-
-
-
-
-
-
-
-
 function changeDay(event) {
   if(this.id === "day-add") return;
   // Save the choice dom element in the array (index by current day)
@@ -156,7 +142,7 @@ function changeDay(event) {
   setDay(currentDay);
 
   $('#day-text').text('Day ' + currentDay)
-
+  console.log('deleting markers', Object.keys(markers).length, markers)
   for (let key in markers){
     removeMapTag(key)
   }
@@ -187,9 +173,6 @@ function removeMapTag(id, eventType) {
   var key = (arguments.length > 1) ? eventType + '/' + id : id
   markers[key].setMap(null);
 }
-
-
-
 
 
 
