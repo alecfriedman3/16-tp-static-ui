@@ -66,6 +66,13 @@ function displayDay(blob) {
 }
 
 function addChoice($elem, id, type, name) {
+  // Is there already one of those?
+  let found = $elem.find("[data-id='" + id + "']");
+  if (found.length > 0) {
+    alert("You already have " + name + " on your schedule for this day.");
+    return;
+  }
+
   $elem.append("<div class='itinerary-item'><span class='title' data-id=" +
       id + " data-type=" + type +">" + name +
       "</span><button class='btn btn-xs btn-danger remove btn-circle'>x</button></div>");
@@ -84,7 +91,6 @@ function addMapTag(thing, locType) {
   markers[locType + '/'+ thing.id] = mapMarker;
   boundary.extend(mapMarker.position);
 }
-
 
 function remover (event) {//event handler from dom button
   let $sibling = $(this).prev()
@@ -142,7 +148,6 @@ function changeDay(event) {
   setDay(currentDay);
 
   $('#day-text').text('Day ' + currentDay)
-  console.log('deleting markers', Object.keys(markers).length, markers)
   for (let key in markers){
     removeMapTag(key)
   }
